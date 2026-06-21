@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useUser } from '@clerk/clerk-react'; // 1. Import Clerk's useUser hook
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // 2. Extract auth state and user details from Clerk
+  const { isSignedIn, user, isLoaded } = useUser();
 
   // Handle scroll effect for sticky nav
   useEffect(() => {
@@ -73,14 +78,23 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Right Section: Auth Buttons */}
+            {/* Right Section: Auth Buttons / Welcome Message */}
             <div className="hidden md:flex items-center space-x-4">
-              <button className="text-[15px] font-medium text-[#0F172A] hover:text-[#007ACC] px-3 py-2 transition-colors duration-200">
-                Start Booking
-              </button>
-              <button className="bg-[#007ACC] hover:bg-[#005A9E] text-white text-[15px] font-medium px-5 py-2.5 rounded-lg transition-colors duration-200 shadow-sm">
-                Sign Up
-              </button>
+              {/* 3. Conditional Rendering for Desktop using Clerk's state */}
+              {isLoaded && isSignedIn && user ? (
+                <span className="text-[15px] font-medium text-[#0F172A]">
+                  Welcome, <span className="font-semibold text-[#007ACC]">{user.firstName}</span>
+                </span>
+              ) : (
+                <>
+                  <Link to="/login" className="text-[15px] font-medium text-[#0F172A] hover:text-[#007ACC] px-3 py-2 transition-colors duration-200">
+                    Start Booking
+                  </Link>
+                  <Link to="/register" className="bg-[#007ACC] hover:bg-[#005A9E] text-white text-[15px] font-medium px-5 py-2.5 rounded-lg transition-colors duration-200 shadow-sm">
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -131,13 +145,23 @@ const Navbar = () => {
               {link.name}
             </a>
           ))}
+          
           <div className="pt-6 flex flex-col space-y-3 px-3">
-            <button className="w-full py-3 text-[15px] font-medium text-[#0F172A] border border-[#E2E8F0] rounded-lg hover:bg-gray-50 transition-colors">
-              Start Booking
-            </button>
-            <button className="w-full py-3 bg-[#007ACC] hover:bg-[#005A9E] text-white text-[15px] font-medium rounded-lg transition-colors shadow-sm">
-              Sign Up
-            </button>
+            {/* 4. Conditional Rendering for Mobile using Clerk's state */}
+            {isLoaded && isSignedIn && user ? (
+              <div className="w-full py-3 text-center text-[15px] font-medium text-[#0F172A] bg-gray-50 border border-[#E2E8F0] rounded-lg">
+                Welcome, <span className="font-semibold text-[#007ACC]">{user.firstName}</span>
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="w-full py-3 text-center text-[15px] font-medium text-[#0F172A] border border-[#E2E8F0] rounded-lg hover:bg-gray-50 transition-colors">
+                  Start Booking
+                </Link>
+                <Link to="/register" className="w-full py-3 text-center bg-[#007ACC] hover:bg-[#005A9E] text-white text-[15px] font-medium rounded-lg transition-colors shadow-sm">
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
