@@ -43,7 +43,7 @@ const Navbar = () => {
           <div className="flex justify-between items-center h-full">
             
             {/* Left Section: Logo & Brand */}
-            <div className="flex items-center cursor-pointer">
+            <Link to="/" className="flex items-center cursor-pointer">
               {/* Geometric Hotel/Travel Icon */}
               <svg 
                 className="w-8 h-8 text-[#007ACC] mr-2.5" 
@@ -63,7 +63,7 @@ const Navbar = () => {
               <span className="text-[#0F172A] font-bold text-xl tracking-tight">
                 CheckInn
               </span>
-            </div>
+            </Link>
 
             {/* Center Section: Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">

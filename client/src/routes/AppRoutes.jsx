@@ -5,6 +5,7 @@ import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import { SignedOut,SignedIn } from "@clerk/clerk-react";
 import HotelDetails from "../pages/HotelDetails";
+import MyBookingsPage from "../pages/MyBookingsPage";
 
 const AppRoutes = () => {
   return (
@@ -47,6 +48,7 @@ const AppRoutes = () => {
         }
       />
       <Route path="/hotel-details" element={<HotelDetails/>}/>
+      <Route path="/hotel-bookings" element={<MyBookingsPage/>}/>
 
       {/* Protected Routes */}
       {/* <Route
