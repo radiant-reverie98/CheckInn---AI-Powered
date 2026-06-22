@@ -7,6 +7,7 @@ import { SignedOut,SignedIn } from "@clerk/clerk-react";
 import HotelDetails from "../pages/HotelDetails";
 import MyBookingsPage from "../pages/MyBookingsPage";
 import FilterHotels from "../pages/FilterHotels";
+import SallyCopilot from "../pages/SallyCopilot";
 
 const AppRoutes = () => {
   return (
@@ -51,6 +52,7 @@ const AppRoutes = () => {
       <Route path="/hotel-details" element={<HotelDetails/>}/>
       <Route path="/hotel-bookings" element={<MyBookingsPage/>}/>
       <Route path="/hotels" element={<FilterHotels/>}/>
+      <Route path="/copilot" element={<SallyCopilot/>}/>
 
       {/* Protected Routes */}
       {/* <Route
