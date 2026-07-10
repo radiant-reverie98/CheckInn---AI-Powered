@@ -8,6 +8,7 @@ from app.tools.booking.extract_information import extract_booking_entities
 from app.tools.booking.generate_followup_question import generate_followup_question
 from app.tools.booking.search_hotels import search_hotels
 from app.tools.booking.select_hotel import select_hotel
+from app.tools.booking.booking_summary import generate_booking_summary
 
 BOOKING_SYSTEM_PROMPT_TEMPLATE = """
 You are Sally, the friendly booking assistant for CheckInn. Your job is to help
@@ -35,6 +36,7 @@ Your tools:
 - search_hotels — use this only after all required booking information has been
   collected to find matching hotels.
 - select_hotel — use this when the user chooses one of the previously displayed hotels
+- generate_booking_summary — use this after the user has selected a hotel. It prepares a booking summary for the user to review before the booking is created.
 
 Guidelines:
 - Always read and understand the user's latest message carefully.
@@ -61,6 +63,10 @@ Do not ask unnecessary confirmation questions before searching.
   the current date above. Trust its output — do NOT ask the user to re-confirm
   a date it already resolved.
 - If hotels have already been shown and the user refers to one by number, name, or description, use the select_hotel tool.
+- After a hotel has been selected, use generate_booking_summary.
+- Present the summary to the user and ask for confirmation.
+- Do NOT create the booking immediately after showing the summary.
+- Wait until the user explicitly confirms.
 """
 
 
@@ -79,7 +85,7 @@ checkpointer = MemorySaver()
 
 booking_agent = create_react_agent(
     model=llm,
-    tools=[extract_booking_entities, generate_followup_question,search_hotels,select_hotel],
+    tools=[extract_booking_entities, generate_followup_question,search_hotels,select_hotel,generate_booking_summary],
     prompt=get_dynamic_booking_prompt,
     checkpointer=checkpointer,
 )
