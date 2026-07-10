@@ -1,9 +1,8 @@
 from langchain_groq import ChatGroq
-from app.config import settings
+from dotenv import load_dotenv
+
+load_dotenv()
 
 llm = ChatGroq(
-    model = settings.MODEL_NAME,
-    api_key=settings.GROQ_API_KEY,
-    temperature=0,
+    model="openai/gpt-oss-120b"
 )
-
