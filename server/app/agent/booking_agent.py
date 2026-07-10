@@ -6,7 +6,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from app.core.llm import llm
 from app.tools.booking.extract_information import extract_booking_entities
 from app.tools.booking.generate_followup_question import generate_followup_question
-
+from app.tools.booking.search_hotels import search_hotels
 
 BOOKING_SYSTEM_PROMPT_TEMPLATE = """
 You are Sally, the friendly booking assistant for CheckInn. Your job is to help
@@ -30,6 +30,8 @@ Your tools:
   booking information.
 - generate_followup_question — use this when you need more information from
   the user to move forward.
+- search_hotels — use this only after all required booking information has been
+  collected to find matching hotels.
 
 Guidelines:
 - Always read and understand the user's latest message carefully.
@@ -37,8 +39,18 @@ Guidelines:
   information.
 - Never invent or assume booking information the user hasn't provided.
 - Never overwrite existing booking information unless the user explicitly changes it.
-- Before searching hotels, make sure you have: destination, check_in, check_out,
-  no_of_adults, no_of_minors.
+- Before using search_hotels, make sure you have:
+- destination
+- check_in
+- check_out
+- no_of_adults
+- no_of_minors
+
+If any of these are missing, use generate_followup_question instead of
+search_hotels.
+
+Once all required information is available, call search_hotels immediately.
+Do not ask unnecessary confirmation questions before searching.
 - Before confirming a booking, make sure the user has selected a specific hotel.
 - If something's missing, use generate_followup_question to ask for it naturally.
 - Ask only one follow-up question at a time.
@@ -63,7 +75,7 @@ checkpointer = MemorySaver()
 
 booking_agent = create_react_agent(
     model=llm,
-    tools=[extract_booking_entities, generate_followup_question],
+    tools=[extract_booking_entities, generate_followup_question,search_hotels],
     prompt=get_dynamic_booking_prompt,
     checkpointer=checkpointer,
 )
