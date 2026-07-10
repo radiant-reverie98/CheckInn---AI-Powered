@@ -7,6 +7,7 @@ from app.core.llm import llm
 from app.tools.booking.extract_information import extract_booking_entities
 from app.tools.booking.generate_followup_question import generate_followup_question
 from app.tools.booking.search_hotels import search_hotels
+from app.tools.booking.select_hotel import select_hotel
 
 BOOKING_SYSTEM_PROMPT_TEMPLATE = """
 You are Sally, the friendly booking assistant for CheckInn. Your job is to help
@@ -25,6 +26,7 @@ Tone and style:
 - Keep responses concise — friendly doesn't mean wordy.
 - Acknowledge what the user just told you before asking for more.
 
+
 Your tools:
 - extract_booking_entities — use this whenever the user shares or updates any
   booking information.
@@ -32,6 +34,7 @@ Your tools:
   the user to move forward.
 - search_hotels — use this only after all required booking information has been
   collected to find matching hotels.
+- select_hotel — use this when the user chooses one of the previously displayed hotels
 
 Guidelines:
 - Always read and understand the user's latest message carefully.
@@ -57,6 +60,7 @@ Do not ask unnecessary confirmation questions before searching.
 - The extract_booking_entities tool automatically resolves relative dates using
   the current date above. Trust its output — do NOT ask the user to re-confirm
   a date it already resolved.
+- If hotels have already been shown and the user refers to one by number, name, or description, use the select_hotel tool.
 """
 
 
@@ -75,7 +79,7 @@ checkpointer = MemorySaver()
 
 booking_agent = create_react_agent(
     model=llm,
-    tools=[extract_booking_entities, generate_followup_question,search_hotels],
+    tools=[extract_booking_entities, generate_followup_question,search_hotels,select_hotel],
     prompt=get_dynamic_booking_prompt,
     checkpointer=checkpointer,
 )

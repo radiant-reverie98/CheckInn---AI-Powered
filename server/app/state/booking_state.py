@@ -5,20 +5,17 @@ from langgraph.graph.message import add_messages
 from typing_extensions import TypedDict
 
 from app.schema.booking_schema import BookingSchema
+from app.schema.hotel_schema import HotelSchema
+
 
 
 class BookingState(TypedDict):
-    # Complete conversation within the Booking Agent
     messages: Annotated[list[AnyMessage], add_messages]
 
-    # Structured booking information
-    booking_entities: BookingSchema
+    booking: BookingSchema
 
-    # Hotel search results
-    search_results: list
+    search_results: list[HotelSchema]
 
-    # Selected hotel (after user chooses one)
-    selected_hotel: dict | None
+    selected_hotel: HotelSchema | None
 
-    # Current stage of booking
-    booking_stage: str
+    
