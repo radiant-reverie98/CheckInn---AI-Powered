@@ -2,6 +2,7 @@ from app.schema.booking_schema import BookingSchema
 
 
 REQUIRED_BOOKING_FIELDS = [
+    "email",
     "destination",
     "check_in",
     "check_out",

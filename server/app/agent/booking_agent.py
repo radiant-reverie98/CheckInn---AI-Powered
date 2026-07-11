@@ -9,6 +9,7 @@ from app.tools.booking.generate_followup_question import generate_followup_quest
 from app.tools.booking.search_hotels import search_hotels
 from app.tools.booking.select_hotel import select_hotel
 from app.tools.booking.booking_summary import generate_booking_summary
+from app.tools.booking.send_booking_email import send_booking_email
 
 BOOKING_SYSTEM_PROMPT_TEMPLATE = """
 You are Sally, the friendly booking assistant for CheckInn. Your job is to help
@@ -37,6 +38,7 @@ Your tools:
   collected to find matching hotels.
 - select_hotel — use this when the user chooses one of the previously displayed hotels
 - generate_booking_summary — use this after the user has selected a hotel. It prepares a booking summary for the user to review before the booking is created.
+- send_booking_email — use this only after the booking has been successfully confirmed. It sends the booking confirmation email to the customer's email address.
 
 Guidelines:
 - Always read and understand the user's latest message carefully.
@@ -85,7 +87,7 @@ checkpointer = MemorySaver()
 
 booking_agent = create_react_agent(
     model=llm,
-    tools=[extract_booking_entities, generate_followup_question,search_hotels,select_hotel,generate_booking_summary],
+    tools=[extract_booking_entities, generate_followup_question,search_hotels,select_hotel,generate_booking_summary,send_booking_email],
     prompt=get_dynamic_booking_prompt,
     checkpointer=checkpointer,
 )

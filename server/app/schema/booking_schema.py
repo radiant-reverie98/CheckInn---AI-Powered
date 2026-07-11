@@ -1,10 +1,14 @@
 from typing import Optional
 from datetime import date
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field,EmailStr
 
 
 class BookingSchema(BaseModel):
+    email: EmailStr | None = Field(
+    default=None,
+    description="Customer's email address."
+)
     destination: Optional[str] = Field(
         default=None,
         description="City or destination where the user wants to stay."
