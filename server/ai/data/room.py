@@ -1,0 +1,42 @@
+MOCK_ROOMS = [
+    {
+        "room_id": 1001,
+        "hotel_id": 103,
+        "room_type": "Deluxe Garden View",
+        "price_per_night": 12500,
+        "max_guests": 2,
+        "available_rooms": 4,
+    },
+    {
+        "room_id": 1002,
+        "hotel_id": 103,
+        "room_type": "Premier Lake View",
+        "price_per_night": 16000,
+        "max_guests": 3,
+        "available_rooms": 2,
+    },
+    {
+        "room_id": 1003,
+        "hotel_id": 104,
+        "room_type": "Deluxe Lake View",
+        "price_per_night": 8500,
+        "max_guests": 2,
+        "available_rooms": 6,
+    },
+    {
+        "room_id": 1004,
+        "hotel_id": 104,
+        "room_type": "Lake View Suite",
+        "price_per_night": 14000,
+        "max_guests": 3,
+        "available_rooms": 2,
+    },
+    {
+        "room_id": 1005,
+        "hotel_id": 105,
+        "room_type": "Palace Room",
+        "price_per_night": 9500,
+        "max_guests": 2,
+        "available_rooms": 5,
+    },
+]
