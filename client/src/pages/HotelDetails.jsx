@@ -1,48 +1,50 @@
-import React from 'react';
-import Navbar from '../components/general/Navbar';
-import Footer from '../components/general/Footer';
-import HotelGallery from '../components/hotel-details/HotelGallery';
-import HotelHeader from '../components/hotel-details/HotelHeader';
-import AISummaryCard from '../components/hotel-details/AISummaryCard';
-import AmenitiesGrid from '../components/hotel-details/AmenitiesGrid';
-import RoomSection from '../components/hotel-details/RoomSection';
-import ReviewsSection from '../components/hotel-details/ReviewsSection';
-import BookingSidebar from '../components/hotel-details/BookingSidebar';
-import SimilarHotels from '../components/hotel-details/SimilarHotels';
-import HotelPolicies from '../components/hotel-details/HotelPolicies';
+import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import Navbar from '../components/general/Navbar'
+import Footer from '../components/general/Footer'
+import HotelHeader from '../components/hotel-details/HotelHeader'
+import RoomSection from '../components/hotel-details/RoomSection'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 function HotelDetails() {
+  const [params] = useSearchParams()
+  const hotelId = params.get('hotelId')
+  const [hotel, setHotel] = useState(null)
+  const [rooms, setRooms] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const hotels = await fetch(`${API_URL}/api/hotels`).then(r => r.json())
+        const found = hotels.find(h => String(h.hotel_id) === String(hotelId)) || hotels[0]
+        setHotel(found)
+        if (found) {
+          const roomData = await fetch(`${API_URL}/api/hotels/${found.hotel_id}/rooms?guests=1`).then(r => r.json())
+          setRooms(roomData)
+        }
+      } finally { setLoading(false) }
+    }
+    load()
+  }, [hotelId])
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading hotel…</div>
+  if (!hotel) return <div className="min-h-screen flex items-center justify-center">Hotel not found.</div>
+
   return (
     <div className="bg-[#F8FAFC] min-h-screen">
       <Navbar />
-
-      <HotelGallery />
-
-      <HotelHeader />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-          {/* Main content column — everything that scrolls normally */}
-          <div className="lg:col-span-2 space-y-12">
-            <AISummaryCard />
-            <AmenitiesGrid />
-            <RoomSection />
-            <ReviewsSection />
-          </div>
-
-          {/* Sidebar column — sticks in place as the main column scrolls */}
-          <div className="lg:col-span-1">
-            <BookingSidebar />
-          </div>
+      <HotelHeader hotelName={hotel.name} rating={Number(hotel.rating)} location={hotel.city} pricePerNight={Number(hotel.price_per_night).toLocaleString('en-IN')} />
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-2xl border p-6 mb-8">
+          <h2 className="text-xl font-bold mb-2">About this stay</h2>
+          <p className="text-slate-600">A CheckInn property in {hotel.city}, with {hotel.available_rooms} rooms currently available.</p>
         </div>
+        <RoomSection rooms={rooms} hotelId={hotel.hotel_id} />
       </main>
-         <SimilarHotels/>
-         <HotelPolicies/>
-
       <Footer />
     </div>
-  );
+  )
 }
-
-export default HotelDetails;
+export default HotelDetails
