@@ -4,6 +4,7 @@ from tools.booking.select_room import select_room
 from llm import get_llm
 from state.sally_state import SallyState
 from langchain.agents import create_agent
+from langchain_core.messages import ToolMessage
 
 BOOKING_AGENT_PROMPT = """
 You are Sally's Booking Agent for CheckInn.
@@ -298,6 +299,18 @@ def booking_agent_node(state: SallyState):
     
     
     for message in result["messages"]:
+
+        if isinstance(message, ToolMessage):
+            if message.name == "search_hotels":
+                try:
+                    payload = message.content
+                    if isinstance(payload, str):
+                        import json
+                        payload = json.loads(payload)
+                    if isinstance(payload, dict):
+                        updates["hotels"] = payload.get("hotels", [])
+                except Exception:
+                    pass
 
         if not hasattr(message, "tool_calls"):
             continue
