@@ -1,45 +1,27 @@
 from state.sally_state import SallyState
+from langchain_core.messages import AIMessage
 
 
 def booking_summary_node(state: SallyState):
+    hotel_id = state.get("selected_hotel_id")
+    room_id = state.get("selected_room_id")
+    hotel = next((h for h in state.get("hotels", []) if h.get("hotel_id") == hotel_id), None)
+    room = next((r for r in state.get("rooms", []) if r.get("room_id") == room_id), None)
+    if not hotel or not room:
+        return {"messages": [AIMessage(content="I selected the room, but I could not build the booking summary yet.")]}
 
-    selected_hotel_id = state["selected_hotel_id"]
-    selected_rooms = state["selected_rooms"]
-
-    # Find selected hotel
-    selected_hotel = next(
-        hotel
-        for hotel in state["hotels"]
-        if hotel["hotel_id"] == selected_hotel_id
-    )
-
-    # Build selected room details
-    room_details = []
-
-    for selected in selected_rooms:
-
-        room = next(
-            room
-            for room in state["rooms"]
-            if room["room_id"] == selected["room_id"]
-        )
-
-        room_details.append({
-            **room,
-            "quantity": selected["quantity"]
-        })
-
+    check_in = state.get("start_date")
+    check_out = state.get("end_date")
+    nights = (check_out - check_in).days if check_in and check_out else 1
+    total = float(room.get("price_per_night", 0)) * max(nights, 1)
     summary = {
-        "destination": state["destination"],
-        "check_in": state["start_date"],
-        "check_out": state["end_date"],
-        "num_guests": state["num_guests"],
-        "hotel": selected_hotel,
-        "rooms": room_details
+        "destination": state.get("destination"), "check_in": check_in, "check_out": check_out,
+        "num_guests": state.get("num_guests"), "hotel": hotel, "room": room,
+        "nights": nights, "total": total,
     }
-
     return {
-        "booking_summary": summary
+        "booking_summary": summary,
+        "booking_total": total,
+        "num_nights": nights,
+        "messages": [AIMessage(content=f"Great choice! {hotel['name']} — {room['room_type']} is selected. {nights} night(s) comes to ₹{total:,.0f}. You can now confirm the booking.")],
     }
-    
-    
